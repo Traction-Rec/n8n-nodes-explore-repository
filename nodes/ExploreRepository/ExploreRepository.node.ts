@@ -327,6 +327,30 @@ export class ExploreRepository implements INodeType {
 						const targetPath = this.getNodeParameter('path', itemIndex, '') as string;
 						const fullPath = validatePath(resolvedRoot, targetPath || '.');
 
+						const dirStats = getStats(fullPath);
+						if (!dirStats) {
+							result = {
+								operation: 'listDirectory',
+								path: targetPath || '.',
+								fullPath,
+								found: false,
+								message: `Directory not found: ${targetPath || '.'}`,
+							};
+							break;
+						}
+
+						if (!dirStats.isDirectory()) {
+							result = {
+								operation: 'listDirectory',
+								path: targetPath || '.',
+								fullPath,
+								found: false,
+								isFile: dirStats.isFile(),
+								message: `Path exists but is not a directory: ${targetPath}`,
+							};
+							break;
+						}
+
 						const entries = fs.readdirSync(fullPath, { withFileTypes: true });
 						const files: Array<{
 							name: string;
@@ -370,6 +394,7 @@ export class ExploreRepository implements INodeType {
 							operation: 'listDirectory',
 							path: targetPath || '.',
 							fullPath,
+							found: true,
 							totalItems: files.length,
 							directories: files.filter((f) => f.type === 'directory').length,
 							files: files.filter((f) => f.type === 'file').length,
@@ -384,14 +409,39 @@ export class ExploreRepository implements INodeType {
 						const lineOffset = this.getNodeParameter('lineOffset', itemIndex, 0) as number;
 
 						if (!targetPath) {
-							throw new NodeOperationError(this.getNode(), 'Path is required for readFile operation', { itemIndex });
+							result = {
+								operation: 'readFile',
+								path: '',
+								found: false,
+								message: 'Path is required for readFile operation',
+							};
+							break;
 						}
 
 						const fullPath = validatePath(resolvedRoot, targetPath);
 						const stats = getStats(fullPath);
 
-						if (!stats || !stats.isFile()) {
-							throw new NodeOperationError(this.getNode(), `File not found or is not a file: ${targetPath}`, { itemIndex });
+						if (!stats) {
+							result = {
+								operation: 'readFile',
+								path: targetPath,
+								fullPath,
+								found: false,
+								message: `File not found: ${targetPath}`,
+							};
+							break;
+						}
+
+						if (!stats.isFile()) {
+							result = {
+								operation: 'readFile',
+								path: targetPath,
+								fullPath,
+								found: false,
+								isDirectory: stats.isDirectory(),
+								message: `Path exists but is not a file: ${targetPath}`,
+							};
+							break;
 						}
 
 						let content = fs.readFileSync(fullPath, 'utf-8');
@@ -416,6 +466,7 @@ export class ExploreRepository implements INodeType {
 							operation: 'readFile',
 							path: targetPath,
 							fullPath,
+							found: true,
 							totalLines,
 							linesReturned: lines.length,
 							lineOffset,
@@ -547,14 +598,27 @@ export class ExploreRepository implements INodeType {
 						const targetPath = this.getNodeParameter('path', itemIndex, '') as string;
 
 						if (!targetPath) {
-							throw new NodeOperationError(this.getNode(), 'Path is required for fileInfo operation', { itemIndex });
+							result = {
+								operation: 'fileInfo',
+								path: '',
+								exists: false,
+								message: 'Path is required for fileInfo operation',
+							};
+							break;
 						}
 
 						const fullPath = validatePath(resolvedRoot, targetPath);
 						const stats = getStats(fullPath);
 
 						if (!stats) {
-							throw new NodeOperationError(this.getNode(), `Path not found: ${targetPath}`, { itemIndex });
+							result = {
+								operation: 'fileInfo',
+								path: targetPath,
+								fullPath,
+								exists: false,
+								message: `Path not found: ${targetPath}`,
+							};
+							break;
 						}
 
 						result = {
@@ -585,8 +649,27 @@ export class ExploreRepository implements INodeType {
 						const fullPath = validatePath(resolvedRoot, targetPath || '.');
 						const stats = getStats(fullPath);
 
-						if (!stats || !stats.isDirectory()) {
-							throw new NodeOperationError(this.getNode(), `Path is not a directory: ${targetPath || '.'}`, { itemIndex });
+						if (!stats) {
+							result = {
+								operation: 'tree',
+								path: targetPath || '.',
+								fullPath,
+								found: false,
+								message: `Directory not found: ${targetPath || '.'}`,
+							};
+							break;
+						}
+
+						if (!stats.isDirectory()) {
+							result = {
+								operation: 'tree',
+								path: targetPath || '.',
+								fullPath,
+								found: false,
+								isFile: stats.isFile(),
+								message: `Path exists but is not a directory: ${targetPath}`,
+							};
+							break;
 						}
 
 						const treeLines = buildTree(fullPath, resolvedRoot, 1, maxDepth);
@@ -595,6 +678,8 @@ export class ExploreRepository implements INodeType {
 						result = {
 							operation: 'tree',
 							path: targetPath || '.',
+							fullPath,
+							found: true,
 							maxDepth,
 							tree: `${rootName}/\n${treeLines.join('\n')}`,
 							treeLines: [rootName + '/', ...treeLines],
