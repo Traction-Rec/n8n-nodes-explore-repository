@@ -40,7 +40,7 @@
     ],
     "n8n": {
         "n8nNodesApiVersion": 1,
-        "strict": true,
+        "strict": false,
         "credentials": [],
         "nodes": [
             "dist/nodes/ExploreRepository/ExploreRepository.node.js"

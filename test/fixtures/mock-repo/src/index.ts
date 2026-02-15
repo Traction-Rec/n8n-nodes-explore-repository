@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Main entry point for the mock application
  */

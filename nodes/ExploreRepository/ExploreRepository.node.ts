@@ -5,7 +5,7 @@ import type {
 	INodeTypeDescription,
 	IDataObject,
 } from 'n8n-workflow';
-import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { ApplicationError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
@@ -19,7 +19,7 @@ function validatePath(rootPath: string, relativePath: string): string {
 	const resolved = path.resolve(resolvedRoot, relativePath);
 
 	if (!resolved.startsWith(resolvedRoot + path.sep) && resolved !== resolvedRoot) {
-		throw new Error(`Path traversal detected - access denied. Path must be within: ${resolvedRoot}`);
+		throw new ApplicationError(`Path traversal detected - access denied. Path must be within: ${resolvedRoot}`);
 	}
 
 	return resolved;
@@ -176,13 +176,32 @@ export class ExploreRepository implements INodeType {
 				placeholder: '/path/to/repository',
 				description: 'The root directory to explore. All operations are sandboxed to this path.',
 			},
+			// eslint-disable-next-line n8n-nodes-base/node-param-operation-without-no-data-expression
 			{
+				// noDataExpression intentionally omitted to allow AI agents to select operations dynamically
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
-				// noDataExpression removed to allow AI agents to select operations dynamically
-				description: 'Choose operation: "listDirectory" (list files/folders), "readFile" (read file contents), "grep" (search text in files), "findFiles" (find by name pattern), "fileInfo" (get file metadata), "tree" (directory tree view)',
+				description: 'Choose operation: "fileInfo", "findFiles", "grep", "listDirectory", "readFile", or "tree"',
 				options: [
+					{
+						name: 'File Info',
+						value: 'fileInfo',
+						description: 'Get metadata about a file (size, dates, permissions)',
+						action: 'Get metadata about a file',
+					},
+					{
+						name: 'Find Files',
+						value: 'findFiles',
+						description: 'Find files by name pattern (glob syntax like *.ts)',
+						action: 'Find files by name pattern',
+					},
+					{
+						name: 'Grep (Search Contents)',
+						value: 'grep',
+						description: 'Search for text patterns in files using regex',
+						action: 'Search for text patterns in files',
+					},
 					{
 						name: 'List Directory',
 						value: 'listDirectory',
@@ -194,24 +213,6 @@ export class ExploreRepository implements INodeType {
 						value: 'readFile',
 						description: 'Read the contents of a file',
 						action: 'Read the contents of a file',
-					},
-					{
-						name: 'Grep (Search Contents)',
-						value: 'grep',
-						description: 'Search for text patterns in files using regex',
-						action: 'Search for text patterns in files',
-					},
-					{
-						name: 'Find Files',
-						value: 'findFiles',
-						description: 'Find files by name pattern (glob syntax like *.ts)',
-						action: 'Find files by name pattern',
-					},
-					{
-						name: 'File Info',
-						value: 'fileInfo',
-						description: 'Get metadata about a file (size, dates, permissions)',
-						action: 'Get metadata about a file',
 					},
 					{
 						name: 'Tree View',
@@ -270,7 +271,7 @@ export class ExploreRepository implements INodeType {
 				name: 'caseInsensitive',
 				type: 'boolean',
 				default: false,
-				description: 'For grep: Whether to perform case-insensitive search',
+				description: 'Whether to perform case-insensitive search (for grep operation)',
 			},
 			{
 				displayName: 'Context Lines',
@@ -444,7 +445,7 @@ export class ExploreRepository implements INodeType {
 							break;
 						}
 
-						let content = fs.readFileSync(fullPath, 'utf-8');
+						const content = fs.readFileSync(fullPath, 'utf-8');
 						let lines = content.split('\n');
 						const totalLines = lines.length;
 
