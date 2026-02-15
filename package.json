@@ -1,0 +1,67 @@
+{
+    "name": "n8n-nodes-explore-repository",
+    "version": "0.1.0",
+    "description": "n8n node for AI agents to explore codebases - list directories, read files, grep, find files, and view directory trees",
+    "license": "MIT",
+    "homepage": "https://github.com/Traction-Rec/n8n-nodes-explore-repository",
+    "keywords": [
+        "n8n-community-node-package",
+        "n8n",
+        "ai",
+        "agent",
+        "codebase",
+        "repository",
+        "grep",
+        "file",
+        "search"
+    ],
+    "author": {
+        "name": "Jonny Power",
+        "email": "jpower@tractionrec.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Traction-Rec/n8n-nodes-explore-repository.git"
+    },
+"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:coverage": "jest --coverage"
+	},
+    "files": [
+        "dist"
+    ],
+    "n8n": {
+        "n8nNodesApiVersion": 1,
+        "strict": true,
+        "credentials": [],
+        "nodes": [
+            "dist/nodes/Example/Example.node.js",
+            "dist/nodes/ExploreRepository/ExploreRepository.node.js"
+        ]
+    },
+    "devDependencies": {
+        "@n8n/node-cli": "*",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^25.2.3",
+        "eslint": "9.32.0",
+        "jest": "^30.2.0",
+        "prettier": "3.6.2",
+        "release-it": "^19.0.4",
+        "ts-jest": "^29.4.6",
+        "typescript": "5.9.2"
+    },
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    },
+    "overrides": {
+        "glob": "^13.0.0"
+    }
+}

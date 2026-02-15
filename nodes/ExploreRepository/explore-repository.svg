@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <!-- Folder base -->
+  <path d="M5 15 L5 50 L55 50 L55 20 L30 20 L25 15 Z" fill="#4A90D9" stroke="#2E5A87" stroke-width="2"/>
+  
+  <!-- Folder tab -->
+  <path d="M5 15 L25 15 L30 20 L5 20 Z" fill="#5BA3EC" stroke="#2E5A87" stroke-width="2"/>
+  
+  <!-- Magnifying glass -->
+  <circle cx="40" cy="35" r="10" fill="none" stroke="#1A1A2E" stroke-width="3"/>
+  <line x1="47" y1="42" x2="54" y2="49" stroke="#1A1A2E" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Code lines inside folder -->
+  <line x1="12" y1="30" x2="22" y2="30" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="36" x2="26" y2="36" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="42" x2="20" y2="42" stroke="#1A1A2E" stroke-width="2" stroke-linecap="round"/>
+</svg>

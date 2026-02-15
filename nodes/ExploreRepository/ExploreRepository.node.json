@@ -1,0 +1,17 @@
+{
+	"node": "n8n-nodes-explore-repository.exploreRepository",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Development", "Developer Tools", "AI"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/Traction-Rec/n8n-nodes-explore-repository"
+			}
+		]
+	},
+	"alias": ["file", "directory", "folder", "grep", "search", "find", "tree", "code", "repository", "codebase", "explore"],
+	"subcategories": {
+		"AI": ["Tools"]
+	}
+}
