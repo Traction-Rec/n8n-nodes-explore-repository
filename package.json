@@ -43,7 +43,6 @@
         "strict": true,
         "credentials": [],
         "nodes": [
-            "dist/nodes/Example/Example.node.js",
             "dist/nodes/ExploreRepository/ExploreRepository.node.js"
         ]
     },
