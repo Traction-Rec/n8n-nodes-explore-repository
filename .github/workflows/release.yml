@@ -11,8 +11,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    # Only run if CI succeeded and was triggered by a push (not PR)
+    # TEMPORARILY DISABLED - remove 'false &&' to re-enable
     if: >
+      false &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
     permissions:
