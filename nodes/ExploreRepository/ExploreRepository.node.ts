@@ -19,7 +19,11 @@ function validatePath(rootPath: string, relativePath: string): string {
 	const resolved = path.resolve(resolvedRoot, relativePath);
 
 	if (!resolved.startsWith(resolvedRoot + path.sep) && resolved !== resolvedRoot) {
-		throw new ApplicationError(`Path traversal detected - access denied. Path must be within: ${resolvedRoot}`);
+		throw new ApplicationError(
+			`Path traversal detected - access denied. ` +
+			`Attempted path: "${relativePath}" resolved to "${resolved}". ` +
+			`Path must be relative and within root: "${resolvedRoot}"`
+		);
 	}
 
 	return resolved;
@@ -333,7 +337,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'listDirectory',
 								path: targetPath || '.',
-								fullPath,
 								found: false,
 								message: `Directory not found: ${targetPath || '.'}`,
 							};
@@ -344,7 +347,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'listDirectory',
 								path: targetPath || '.',
-								fullPath,
 								found: false,
 								isFile: dirStats.isFile(),
 								message: `Path exists but is not a directory: ${targetPath}`,
@@ -394,7 +396,6 @@ export class ExploreRepository implements INodeType {
 						result = {
 							operation: 'listDirectory',
 							path: targetPath || '.',
-							fullPath,
 							found: true,
 							totalItems: files.length,
 							directories: files.filter((f) => f.type === 'directory').length,
@@ -426,7 +427,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'readFile',
 								path: targetPath,
-								fullPath,
 								found: false,
 								message: `File not found: ${targetPath}`,
 							};
@@ -437,7 +437,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'readFile',
 								path: targetPath,
-								fullPath,
 								found: false,
 								isDirectory: stats.isDirectory(),
 								message: `Path exists but is not a file: ${targetPath}`,
@@ -466,7 +465,6 @@ export class ExploreRepository implements INodeType {
 						result = {
 							operation: 'readFile',
 							path: targetPath,
-							fullPath,
 							found: true,
 							totalLines,
 							linesReturned: lines.length,
@@ -615,7 +613,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'fileInfo',
 								path: targetPath,
-								fullPath,
 								exists: false,
 								message: `Path not found: ${targetPath}`,
 							};
@@ -625,7 +622,6 @@ export class ExploreRepository implements INodeType {
 						result = {
 							operation: 'fileInfo',
 							path: targetPath,
-							fullPath,
 							exists: true,
 							isFile: stats.isFile(),
 							isDirectory: stats.isDirectory(),
@@ -654,7 +650,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'tree',
 								path: targetPath || '.',
-								fullPath,
 								found: false,
 								message: `Directory not found: ${targetPath || '.'}`,
 							};
@@ -665,7 +660,6 @@ export class ExploreRepository implements INodeType {
 							result = {
 								operation: 'tree',
 								path: targetPath || '.',
-								fullPath,
 								found: false,
 								isFile: stats.isFile(),
 								message: `Path exists but is not a directory: ${targetPath}`,
@@ -679,7 +673,6 @@ export class ExploreRepository implements INodeType {
 						result = {
 							operation: 'tree',
 							path: targetPath || '.',
-							fullPath,
 							found: true,
 							maxDepth,
 							tree: `${rootName}/\n${treeLines.join('\n')}`,
